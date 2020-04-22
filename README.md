@@ -1,10 +1,9 @@
-# Informações em Stardew
+# Stardew Valley
 
 ## Sobre
 
-Este alicativo vai checar em [Stardew Valley](http://stardewvalley.net/) usando seu save file com o propósito de saber quais conquistas ainda faltam completar.
+Este app checa no site [Stardew Valley](http://stardewvalley.net/) com seu save file as varias conquistas e milestones que ainda faltam completar. No estado atual checando 38 conquistas.
 
-The app is written in Javascript and uses [jQuery](https://jquery.com/); e está hosteado na GitHub Pages https://thousanddaggerss.github.io/ 
+O app é escrito em javascript e usa [jQuery](https://jquery.com/); e a versão portugues está hosteado na github page sobre o link https://thousanddaggerss.github.io/ e está liberado sobre a licensa MIT.
 
-Fiz algumas alterações para a lingua portuguesa.
-Criador do código: https://github.com/MouseyPounds/stardew-checkup
+Propriedade intelectual de https://github.com/MouseyPounds/stardew-checkup
