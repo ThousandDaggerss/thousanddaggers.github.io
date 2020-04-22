@@ -1,5 +1,5 @@
 /* stardew-checkup.js
- * https://mouseypounds.github.io/stardew-checkup/
+ * https://thousanddaggerss.github.io/
  */
 
 /*jslint indent: 4, maxerr: 50, passfail: false, browser: true, regexp: true, plusplus: true */
@@ -8,16 +8,16 @@
 window.onload = function () {
 	"use strict";
 
-	// Check for required File API support.
+	// Checa o arquivo requerido para suporte ao API.
 	if (!(window.File && window.FileReader)) {
-		document.getElementById('out').innerHTML = '<span class="error">Fatal Error: Could not load the File & FileReader APIs</span>';
+		document.getElementById('out').innerHTML = '<span class="error">Erro Fatal: Não pode ler o arquivo e os APIs</span>';
 		return;
 	}
 
-	// Show input field immediately
+	// Mostra o campo input imediatamente
 	$(document.getElementById('input-container')).show();
 
-	// Utility functions
+	// Funcões Utéis
 	function addCommas(x) {
 		// Jamie Taylor @ https://stackoverflow.com/questions/3883342/add-commas-to-a-number-in-jquery
 		return x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
@@ -47,20 +47,20 @@ window.onload = function () {
 		if (desc.length > 0) {
 			desc = '(' + desc + ') ';
 		}
-		return (yes) ? '<span class="ach_yes"><span class="ach">' + name + '</span> ' + desc + ' done</span>' :
-					'<span class="ach_no"><span class="ach">' + name + '</span> ' + desc + '</span> -- need ';
+		return (yes) ? '<span class="ach_yes"><span class="ach">' + name + '</span> ' + desc + ' concluído</span>' :
+					'<span class="ach_no"><span class="ach">' + name + '</span> ' + desc + '</span> -- falta ';
 	}
 
 	function getAchieveImpossibleString(name, desc) {
 		if (desc.length > 0) {
 			desc = '(' + desc + ') ';
 		}
-		return '<span class="ach_imp"><span class="ach">' + name + '</span> ' + desc + ' impossible</span>';
+		return '<span class="ach_imp"><span class="ach">' + name + '</span> ' + desc + ' impossível</span>';
 	}
 
 	function getMilestoneString(desc, yes) {
 		return (yes) ? '<span class="ms_yes">' + desc + '</span>' :
-					'<span class="ms_no">' + desc + '</span> -- need ';
+					'<span class="ms_no">' + desc + '</span> -- falta ';
 	}
 
 	function getPointString(pts, desc, cum, yes) {
@@ -70,11 +70,11 @@ window.onload = function () {
 	}
 
 	function getPointImpossibleString(pts, desc) {
-		return '<span class="pt_imp"><span class="pts">+' + pts + '</span> impossible (' + desc + ')</span>';
+		return '<span class="pt_imp"><span class="pts">+' + pts + '</span> impossível (' + desc + ')</span>';
 	}
 
 	function wikify(item, page) {
-		// removing egg colors & changing spaces to underscores
+		// removendo cores e mudando espaços para underscore
 		var trimmed = item.replace(' (White)', '');
 		trimmed = trimmed.replace(' (Brown)', '');
 		trimmed = trimmed.replace(/ /g, '_');
@@ -83,7 +83,7 @@ window.onload = function () {
 	}
 
 	function wikimap(item, index, arr) {
-		// Wrapper to allow wikify to be used within an array map without misinterpreting the 2nd and 3rd arguments.
+		// Wrapper permite wikify seja usado dentro de um mapa array sem falha de leitura ou segundos e terceiros argumentos.
 		return wikify(item);
 	}
 	
@@ -103,20 +103,20 @@ window.onload = function () {
 	}
 	
 	function isValidFarmhand(player) {
-		// Had been using a blank userID field to determine that a farmhand slot is empty
-		// until a user sent a save where a valid farmhand had no ID. Now using both a blank
-		// userID and name field and hoping that it's enough.
+		// deve ser usado um userID em branco para determinar que o espaço farmhand está vazio
+		// até que um usuário envie um arquivo salvo válido farmhand não tem ID. Usando ambos um userID
+		// em branco e o nome campo já é suficiente.
 		if (($(player).children('userID').text() === '') && ($(player).children('name').text() === '')) {
 			return false;
 		}
 		return true;
 	}
 	
-	// Individual chunks of save parsing.
-	// Each receives the xmlDoc object to parse & the saveInfo information structure and returns HTML to output.
+	// Partes individuais do save para fazer parsing.
+	// Cada objeto xmlDoc recebido para parse e as estruturas de informações saveInfo retorna HTML.
 	function parseSummary(xmlDoc, saveInfo) {
-		var output = '<h3>Summary</h3>\n',
-			farmTypes = ['Standard', 'Riverland', 'Forest', 'Hill-top', 'Wilderness', 'Four Corners'],
+		var output = '<h3>Visão Geral</h3>\n',
+			farmTypes = ['Fazenda Padrão', 'Fazenda entre Riachos', 'Fazenda na Floresta', 'Fazenda na Colina', 'Fazenda Remota', 'Fazenda Quatro Cantos'],
 			playTime = Number($(xmlDoc).find('player > millisecondsPlayed').text()),
 			playHr = Math.floor(playTime / 36e5),
 			playMin = Math.floor((playTime % 36e5) / 6e4),
@@ -125,7 +125,7 @@ window.onload = function () {
 			farmer = name,
 			farmhands = [];
 		
-		// Versioning has changed from bools to numers, to now a semver string.
+		// Mudança de versão para bools e para numeros, agora uma string semver.
 		saveInfo.version = $(xmlDoc).find('gameVersion').first().text();
 		if (saveInfo.version === "") {
 			saveInfo.version = "1.2";
@@ -136,10 +136,9 @@ window.onload = function () {
 			}
 		}
 
-		// Namespace prefix varies by platform; iOS saves seem to use 'p3' and PC saves use 'xsi'.
+		// Prefixos Namespace variados por plataforma; saves em iOS saves parecem usar 'p3' e PC saves usa 'xsi'.
 		saveInfo.ns_prefix = ($(xmlDoc).find('SaveGame[xmlns\\:xsi]').length > 0) ? 'xsi': 'p3';
-		// Farmer, farm, and child names are read as html() because they come from user input and might contain characters
-		// which must be escaped.
+		// Fazendeiro, Fazenda, e Nome dos Filhos são lidos como html() porque eles vem de uma ação input executada pelo usuário e pode conter caracteres que deve ser usados em escapes.
 		saveInfo.players = {};
 		saveInfo.children = {};
 		if (compareSemVer(saveInfo.version, "1.3") >= 0) {
@@ -151,9 +150,9 @@ window.onload = function () {
 			saveInfo.children[id].push($(this).find('name').html());
 		});
 		saveInfo.numPlayers = 1;
-		output += '<span class="result">' + $(xmlDoc).find('player > farmName').html() + ' Farm (' + 
+		output += '<span class="result">' + 'Fazenda: ' + $(xmlDoc).find('player > farmName').html() + ' (' + 
 			farmTypes[$(xmlDoc).find('whichFarm').text()] + ')</span><br />';
-		output += '<span class="result">Farmer ' + name ;
+		output += '<span class="result">Fazendeiro: ' + name ;
 		$(xmlDoc).find('farmhand').each(function() {
 			if (isValidFarmhand(this)) {
 				saveInfo.numPlayers++;
@@ -172,7 +171,7 @@ window.onload = function () {
 			createPlayerList(saveInfo.numPlayers, farmer, farmhands);
 		}
 		output += '</span><br />';
-		// Searching for marriage between players & their children
+		// Procudando por casamentos entre os jogadores e seus filhos
 		saveInfo.partners = {};
 		$(xmlDoc).find('farmerFriendships > item').each(function() {
 			var item = this;
@@ -183,12 +182,12 @@ window.onload = function () {
 				saveInfo.partners[id2] = id1;
 			}
 		});
-		// Date originally used XXForSaveGame elements, but those were not always present on saves downloaded from upload.farm
-		output += '<span class="result">Day ' + Number($(xmlDoc).find('dayOfMonth').text()) + ' of ' +
-			capitalize($(xmlDoc).find('currentSeason').html()) + ', Year ' + Number($(xmlDoc).find('year').text()) + '</span><br />';
-		output += '<span class="result">Played for ';
+		// Data originalmente usa elementos XXForSaveGame, mas eles nem sempre estão presentes em saves carregados da upload.farm
+		output += '<span class="result">Dia ' + Number($(xmlDoc).find('dayOfMonth').text()) + ' - ' +
+			capitalize($(xmlDoc).find('currentSeason').html()) + ' - Ano ' + Number($(xmlDoc).find('year').text()) + '</span><br />';
+		output += '<span class="result">Tempo de Jogo: ';
 		if (playHr === 0 && playMin === 0) {
-			output += "less than 1 minute";
+			output += "menos de um minuto";
 		} else {
 			if (playHr > 0) {
 				output += playHr + ' hr ';
@@ -199,14 +198,14 @@ window.onload = function () {
 		}
 		output += '</span><br />';
 		var version_num = saveInfo.version;
-		output += '<span class="result">Save is from version ' + version_num + '</span><br />';
+		output += '<span class="result">Versão do Arquivo Salvo: ' + version_num + '</span><br />';
 		return output;
 	}
 
 	function parseMoney(xmlDoc, saveInfo) {
-		var output = '<h3>Money</h3>\n',
+		var output = '<h3>Ouro</h3>\n',
 			table = [];
-		// This is pretty pointless with shared gold, but I separate everything else for multiplayer...
+		// Isso é um pouco impreciso com gold compartilhado em multiplayer, mas aqui ta separado tudo pra cada jogador...
 		table[0] = parsePlayerMoney($(xmlDoc).find('SaveGame > player'), saveInfo);
 		if (saveInfo.numPlayers > 1) {
 			$(xmlDoc).find('farmhand').each(function () {
@@ -223,23 +222,23 @@ window.onload = function () {
 		var output = '',
 			money = Number($(player).children('totalMoneyEarned').text());
 
-		output += '<span class="result">' + $(player).children('name').html() + ' has earned ' +
-			addCommas(money) + 'g.</span><br />\n';
+		output += '<span class="result">' + $(player).children('name').html() + ' arrecadou ' +
+			addCommas(money) + ' ouro no total.</span><br />\n';
 		output += '<ul class="ach_list"><li>';
-		output += (money >= 15e3) ? getAchieveString('Greenhorn', 'earn 15,000g', 1) :
-				getAchieveString('Greenhorn', 'earn 15,000g', 0) + addCommas(15e3 - money) + 'g more';
+		output += (money >= 15e3) ? getAchieveString('Greenhorn', 'ganhe 15,000 ouro', 1) :
+				getAchieveString('Greenhorn', 'ganhe 15,000 ouro', 0) + addCommas(15e3 - money) + ' ouro';
 		output += '</li>\n<li>';
-		output += (money >= 5e4) ? getAchieveString('Cowpoke', 'earn 50,000g', 1) :
-				getAchieveString('Cowpoke', 'earn 50,000g', 0) + addCommas(5e4 - money) + 'g more';
+		output += (money >= 5e4) ? getAchieveString('Cowpoke', 'ganhe 50,000 ouro', 1) :
+				getAchieveString('Cowpoke', 'ganhe 50,000 ouro', 0) + addCommas(5e4 - money) + ' ouro';
 		output += '</li>\n<li>';
-		output += (money >= 25e4) ? getAchieveString('Homesteader', 'earn 250,000g', 1) :
-				getAchieveString('Homesteader', 'earn 250,000g', 0) + addCommas(25e4 - money) + 'g more';
+		output += (money >= 25e4) ? getAchieveString('Homesteader', 'ganhe 250,000 ouro', 1) :
+				getAchieveString('Homesteader', 'ganhe 250,000 ouro', 0) + addCommas(25e4 - money) + ' ouro';
 		output += '</li>\n<li>';
-		output += (money >= 1e6) ? getAchieveString('Millionaire', 'earn 1,000,000g', 1) :
-				getAchieveString('Millionaire', 'earn 1,000,000g', 0) + addCommas(1e6 - money) + 'g more';
+		output += (money >= 1e6) ? getAchieveString('Millionaire', 'ganhe 1,000,000 ouro', 1) :
+				getAchieveString('Millionaire', 'ganhe 1,000,000 ouro', 0) + addCommas(1e6 - money) + ' ouro';
 		output += '</li>\n<li>';
-		output += (money >= 1e7) ? getAchieveString('Legend', 'earn 10,000,000g', 1) :
-				getAchieveString('Legend', 'earn 10,000,000g', 0) + addCommas(1e7 - money) + 'g more';
+		output += (money >= 1e7) ? getAchieveString('Legend', 'ganhe 10,000,000 ouro', 1) :
+				getAchieveString('Legend', 'ganhe 10,000,000 ouro', 0) + addCommas(1e7 - money) + ' ouro';
 		output += '</li></ul>\n';
 		return [output];
 	}
@@ -453,8 +452,8 @@ window.onload = function () {
 					seen = true;
 				}
 			});
-			// checks for events which can be permanently missed; 1st is Clint 6H, second is Sam 3H
-			// Penny 4H & 6H added if Pam House Upgrade is done.
+			// checando por eventos que podem ser perdidos permanentemente; primeiro é Clint 6H, segundo é Sam 3H
+			// Penny 4H e 6H adicionados se houve upgrade na casa da Pam.
 			if ((arr[1] === 101 && (eventsSeen.hasOwnProperty(2123243) || eventsSeen.hasOwnProperty(2123343))) || 
 				(arr[1] === 733330 && daysPlayed > 84) ||
 				(arr[1] === 35 && hasPamHouse) || 
@@ -514,8 +513,8 @@ window.onload = function () {
 				if (compareSemVer(saveInfo.version, "1.4") >= 0) {
 					max = 3500;
 				}
-				entry += (pts >= max) ? '<span class="ms_yes">MAX (can still decay)</span></li>' :
-					'<span class="ms_no">need ' + (max - pts) + ' more</span></li>';
+				entry += (pts >= max) ? '<span class="ms_yes">MAX (ainda pode diminuir)</span></li>' :
+					'<span class="ms_no">precisa mais ' + (max - pts) + ' </span></li>';
 				hasNPCSpouse = true;
 				list_fam.push(entry + eventInfo);
 			} else if (npc[who].isDatable) {
@@ -524,11 +523,11 @@ window.onload = function () {
 					max = 2500;
 				}
 				entry += (pts >= max) ? '<span class="ms_yes">MAX</span></li>' :
-					'<span class="ms_no">need ' + (max - pts) + ' more</span></li>';
+					'<span class="ms_no">precisa mais ' + (max - pts) + ' </span></li>';
 				list_bach.push(entry + eventInfo);
 			} else {
 				entry += (pts >= 2500) ? '<span class="ms_yes">MAX</span></li>' :
-					'<span class="ms_no">need ' + (2500 - pts) + ' more</span></li>';
+					'<span class="ms_no">precisa mais ' + (2500 - pts) + ' </span></li>';
 				if (npc[who].isChild) {
 					list_fam.push(entry + eventInfo);
 				} else {
@@ -540,7 +539,7 @@ window.onload = function () {
 			for (var who in polyamory) {
 				// Rather than trying to force these to work in the eventCheck function, we make a new checker.
 				var seen = false;
-				var span = 'no';
+				var span = 'não';
 				var entry = '<li>' + who;
 				for (var id = 0; id < polyamory[who].length; id++ ) {
 					if (eventsSeen.hasOwnProperty(polyamory[who][id])) {
@@ -548,7 +547,7 @@ window.onload = function () {
 					}
 				}
 				if (seen) {
-					span = 'yes';
+					span = 'sim';
 				} else if (hasNPCSpouse) {
 					span = 'imp';
 				}
@@ -561,33 +560,33 @@ window.onload = function () {
 			hasCompletedIntroductions = false;
 		});
 
-		output += '<span class="result">' + farmer + ' has ' + count_5h + ' relationship(s) of 5+ hearts.</span><ul class="ach_list">\n';
+		output += '<span class="result">' + farmer + ' tem ' + count_5h + ' relacionamento de 5+ corações.</span><ul class="ach_list">\n';
 		output += '<li>';
-		output += (count_5h >= 1) ? getAchieveString('A New Friend', '5&#x2665; with 1 person', 1) :
-				getAchieveString('A New Friend', '5&#x2665; with 1 person', 0) + (1 - count_5h) + ' more';
+		output += (count_5h >= 1) ? getAchieveString('A New Friend', '5 &#x2665; com uma pessoa', 1) :
+				getAchieveString('A New Friend', '5 &#x2665; com uma pessoa', 0) + (1 - count_5h) + ' ';
 		output += '</li>\n<li>';
-		output += (count_5h >= 4) ? getAchieveString('Cliques', '5&#x2665; with 4 people', 1) :
-				getAchieveString('Cliques', '5&#x2665; with 4 people', 0) + (4 - count_5h) + ' more\n';
+		output += (count_5h >= 4) ? getAchieveString('Cliques', '5 &#x2665; com 4 pessoas', 1) :
+				getAchieveString('Cliques', '5 &#x2665; com 4 pessoas', 0) + (4 - count_5h) + ' \n';
 		output += '</li>\n<li>';
-		output += (count_5h >= 10) ? getAchieveString('Networking', '5&#x2665; with 10 people', 1) :
-				getAchieveString('Networking', '5&#x2665; with 10 people', 0) + (10 - count_5h) + ' more';
+		output += (count_5h >= 10) ? getAchieveString('Networking', '5 &#x2665; com 10 pessoas', 1) :
+				getAchieveString('Networking', '5 &#x2665; com 10 pessoas', 0) + (10 - count_5h) + ' ';
 		output += '</li>\n<li>';
-		output += (count_5h >= 20) ? getAchieveString('Popular', '5&#x2665; with 20 people', 1) :
-				getAchieveString('Popular', '5&#x2665; with 20 people', 0) + (20 - count_5h) + ' more';
+		output += (count_5h >= 20) ? getAchieveString('Popular', '5 &#x2665; com 20 pessoas', 1) :
+				getAchieveString('Popular', '5 &#x2665; com 20 pessoas', 0) + (20 - count_5h) + ' ';
 		output += '</li></ul>\n';
 		table.push(output);
-		output = '<span class="result">' + farmer + ' has ' + count_10h + ' relationships of 10+ hearts.</span><ul class="ach_list">\n';
+		output = '<span class="result">' + farmer + ' tem ' + count_10h + ' relacionamento de 10+ corações.</span><ul class="ach_list">\n';
 		output += '<li>';
-		output += (count_10h >= 1) ? getAchieveString('Best Friends', '10&#x2665; with 1 person', 1) :
-				getAchieveString('Best Friends', '10&#x2665; with 1 person', 0) + (1 - count_10h) + ' more';
+		output += (count_10h >= 1) ? getAchieveString('Best Friends', '10 &#x2665; com uma pessoa', 1) :
+				getAchieveString('Best Friends', '10 &#x2665; com uma pessoa', 0) + (1 - count_10h) + ' ';
 		output += '</li>\n<li>';
-		output += (count_10h >= 8) ? getAchieveString('The Beloved Farmer', '10&#x2665; with 8 people', 1) :
-				getAchieveString('The Beloved Farmer', '10&#x2665; with 8 people', 0) + (8 - count_10h) + ' more';
+		output += (count_10h >= 8) ? getAchieveString('The Beloved Farmer', '10 &#x2665; com 8 pessoas', 1) :
+				getAchieveString('The Beloved Farmer', '10 &#x2665; com 8 pessoas', 0) + (8 - count_10h) + ' ';
 		output += '</li></ul>\n';
 		table.push(output);
 		//HERE getMilestoneString('House fully upgraded', 1 <ul class="outer">
-		output = '<span class="result">' + farmer + ' has ' + (hasCompletedIntroductions ? "" : "not ") + 
-				'met everyone in town.</span><ul class="ach_list">\n';
+		output = '<span class="result">' + farmer + ' tem ' + (hasCompletedIntroductions ? "" : "não ") + 
+				'encontrado todos na cidade.</span><ul class="ach_list">\n';
 		output += '<li>';
 		output += (list_intro.length == 0) ? getMilestoneString('Complete <span class="ach">Introductions</span> quest', 1) :
 				getMilestoneString('Complete <span class="ach">Introductions</span> quest', 0) + (list_intro.length) + ' more';
